@@ -11,7 +11,7 @@
         </div>
         <div class="swiper-slide" style="background: #040B1B;">
           <a target="_blank" href="/">
-            <img src="~/assets/photo/banner/1525939573202.jpg" alt="首页banner">
+            <img src="~/assets/photo/banner/153525d0ef15459596.jpg" alt="首页banner">
           </a>
         </div>
       </div>
