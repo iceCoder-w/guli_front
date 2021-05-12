@@ -44,7 +44,6 @@
 import '~/assets/css/sign.css'
 import '~/assets/css/iconfont.css'
 import cookie from 'js-cookie'
-
 import loginApi from '@/api/login'
 export default {
   layout: 'sign',
@@ -55,21 +54,23 @@ export default {
         mobile:'',
         password:''
       },
+      // 获取用户信息
       loginInfo:{}
     }
   },
 
   methods: {
+    // 登录
     submitLogin(){
       loginApi.submitLogin(this.user).then(response => {
         if(response.data.success){
 
-          //把token存在cookie中、也可以放在localStorage中
+          //把token存在cookie中、也可以放在localStorage中（domain为作用范围）
           cookie.set('guli_token', response.data.data.token, { domain: 'localhost' })
           //登录成功根据token获取用户信息
           loginApi.getLoginInfo().then(response => {
 
-            this.loginInfo = response.data.data.item
+            this.loginInfo = response.data.data.userInfo
             //将用户信息记录cookie
             cookie.set('guli_ucenter', this.loginInfo, { domain: 'localhost' })
             //跳转页面

@@ -94,16 +94,18 @@ export default {
 
       //debugger
       // prop 换成你想监听的prop字段
+      // 发送短信验证码
       this.$refs.userForm.validateField('mobile', (errMsg) => {
         if (errMsg == '') {
           registerApi.getMobile(this.params.mobile).then(res => {
-            this.sending = false;
-            this.timeDown();
+            this.sending = false; // 点完一次不能再点第二次
+            this.timeDown(); // 开始倒计时
           });
         }
       })
     },
 
+    // 倒计时
     timeDown() {
       let result = setInterval(() => {
         --this.second;
@@ -118,15 +120,18 @@ export default {
       }, 1000);
 
     },
+
+    // 点击注册提交数据
     submitRegister() {
       this.$refs['userForm'].validate((valid) => {
         if (valid) {
           registerApi.submitRegister(this.params).then(response => {
-            //提示注册成功
+            // 提示注册成功
             this.$message({
               type: 'success',
               message: "注册成功"
             })
+            // 跳转登录页面
             this.$router.push({path: '/login'})
           })
         }
@@ -136,9 +141,9 @@ export default {
     checkPhone (rule, value, callback) {
       //debugger
       if (!(/^1[34578]\d{9}$/.test(value))) {
-        return callback(new Error('手机号码格式不正确'))
+        return callback(new Error('手机号码格式不正确')) // 输入不对，执行这个
       }
-      return callback()
+      return callback() // 输入对，往下执行
     }
   }
 }
