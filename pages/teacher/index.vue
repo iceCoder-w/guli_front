@@ -21,13 +21,15 @@
             <span class="c-666 fsize14 ml10 vam">没有相关数据，小编正在努力整理中...</span>
           </section>
           <!-- /无数据提示 结束-->
+
+          <!-- 数据列表 开始-->
           <article class="i-teacher-list" v-if="data.total>0">
             <ul class="of">
 
               <li v-for="item in data.items" :key="item.id">
                 <section class="i-teach-wrap">
                   <div class="i-teach-pic">
-                    <a href="'/teacher/'+item.id" :title="item.name">
+                    <a :href="'/teacher/'+item.id" :title="item.name">
                       <img :src="item.avatar" :alt="item.name" height="142" hright="142">
                     </a>
                   </div>
@@ -46,18 +48,40 @@
             </ul>
             <div class="clear"></div>
           </article>
+          <!-- /数据列表 结束-->
         </div>
         <!-- 公共分页 开始 -->
         <div>
           <div class="paging">
             <!-- undisable这个class是否存在，取决于数据属性hasPrevious -->
-            <a href="#" title="首页">首</a>
-            <a href="#" title="前一页">&lt;</a>
-            <a href="#" title="第1页" class="current undisable">1</a>
-            <a href="#" title="第2页">2</a>
-            <a href="#" title="后一页">&gt;</a>
-            <a href="#" title="末页">末</a>
-            <div class="clear"></div>
+            <a
+              :class="{undisable: !data.hasPrevious}"
+              href="#"
+              title="首页"
+              @click.prevent="gotoPage(1)">首</a>  <!-- .prevent用来阻止本身事件（a标签为跳转），转而执行后面的方法 -->
+            <a
+              :class="{undisable: !data.hasPrevious}"
+              href="#"
+              title="前一页"
+              @click.prevent="gotoPage(data.current-1)">&lt;</a>
+            <a
+              v-for="page in data.pages"
+              :key="page"
+              :class="{current: data.current == page, undisable: data.current == page}"
+              :title="'第'+page+'页'"
+              href="#"
+              @click.prevent="gotoPage(page)">{{ page }}</a>
+            <a
+              :class="{undisable: !data.hasNext}"
+              href="#"
+              title="后一页"
+              @click.prevent="gotoPage(data.current+1)">&gt;</a>
+            <a
+              :class="{undisable: !data.hasNext}"
+              href="#"
+              title="末页"
+              @click.prevent="gotoPage(data. pages)">末</a>
+            <div class="clear"/>
           </div>
         </div>
         <!-- 公共分页 结束 -->
@@ -72,9 +96,31 @@ export default {
   // 异步调用,调用一次（与之前的created调用不同，只有页面被调用后才被执行）
   // params.id 等价于 this.$route.params.id
   asyncData({ params, error }) {
-    return teacherApi.getPageList(1, 8).then(response => {
+    return teacherApi.getPageList(1, 8).then(response => { // 使用了一种新写法，在第二个return中将数据直接赋值给data
       return { data: response.data.data }
     });
   },
+
+  methods: {
+    // 分页切换
+    gotoPage(page) {
+      if (page > this.data.pages){
+        this.$message({
+          type: 'info',
+          message: '已经是最后一页！'
+        })
+      }else if (page < 1){
+        this.$message({
+          type: 'info',
+          message: '已经是第一页！'
+        })
+      }else {
+        teacherApi.getPageList(page, 8)
+          .then(response => {
+            this.data = response.data.data
+          })
+      }
+    }
+  }
 };
 </script>
