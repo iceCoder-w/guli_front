@@ -101,13 +101,35 @@
         <!-- 公共分页 开始 -->
         <div>
           <div class="paging">
-            <a class="undisable" title>首</a>
-            <a id="backpage" class="undisable" href="#" title>&lt;</a>
-            <a href="#" title class="current undisable">1</a>
-            <a href="#" title>2</a>
-            <a id="nextpage" href="#" title>&gt;</a>
-            <a href="#" title>末</a>
-            <div class="clear"></div>
+            <!-- undisable这个class是否存在，取决于数据属性hasPrevious -->
+            <a
+              :class="{undisable: !data.hasPrevious}"
+              href="#"
+              title="首页"
+              @click.prevent="gotoPage(1)">首</a>
+            <a
+              :class="{undisable: !data.hasPrevious}"
+              href="#"
+              title="前一页"
+              @click.prevent="gotoPage(data.current-1)">&lt;</a>
+            <a
+              v-for="page in data.pages"
+              :key="page"
+              :class="{current: data.current == page, undisable: data.current == page}"
+              :title="'第'+page+'页'"
+              href="#"
+              @click.prevent="gotoPage(page)">{{ page }}</a>
+            <a
+              :class="{undisable: !data.hasNext}"
+              href="#"
+              title="后一页"
+              @click.prevent="gotoPage(data.current+1)">&gt;</a>
+            <a
+              :class="{undisable: !data.hasNext}"
+              href="#"
+              title="末页"
+              @click.prevent="gotoPage(data.pages)">末</a>
+            <div class="clear"/>
           </div>
         </div>
         <!-- 公共分页 结束 -->
@@ -161,26 +183,23 @@ export default {
     // 分页切换的方法
     gotoPage(page) {
       this.page = page
-      courseApi.getPageList(page, 8, this.searchObj)
-        .then(response => {
-        this.data = response.data.data
-      })
-      // if (page > this.data.pages){
-      //   this.$message({
-      //     type: 'info',
-      //     message: '已经是最后一页！'
-      //   })
-      // }else if (page < 1){
-      //   this.$message({
-      //     type: 'info',
-      //     message: '已经是第一页！'
-      //   })
-      // }else {
-      //   teacherApi.getPageList(page, 8)
-      //     .then(response => {
-      //       this.data = response.data.data
-      //     })
-      // }
+
+      if (page > this.data.pages){
+        this.$message({
+          type: 'info',
+          message: '已经是最后一页！'
+        })
+      }else if (page < 1){
+        this.$message({
+          type: 'info',
+          message: '已经是第一页！'
+        })
+      }else {
+        courseApi.getPageList(page, 8, this.searchObj)
+          .then(response => {
+            this.data = response.data.data
+          })
+      }
     }
   }
 };
