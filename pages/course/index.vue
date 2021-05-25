@@ -16,10 +16,10 @@
             <dd class="c-s-dl-li">
               <ul class="clearfix">
                 <li>
-                  <a title="全部" href="#">全部</a>
+                  <a title="全部" href="javascript:void(0);" @click="searchOne('')">全部</a>
                 </li>
                 <li v-for="(subject,index) in subjectNestedList" :key="index" :class="{active:oneIndex==index}">
-                  <a :title="subject.title" href="#" @click="searchOne(subject.id, index)"> {{ subject.title }} </a>
+                  <a :title="subject.title" href="javascript:void(0);" @click="searchOne(subject.id, index)"> {{ subject.title }} </a>
                 </li>
               </ul>
             </dd>
@@ -31,7 +31,7 @@
             <dd class="c-s-dl-li">
               <ul class="clearfix">
                 <li v-for="(subject,index) in subSubjectList" :key="index" :class="{active:twoIndex==index}">
-                  <a :title="subject.title" href="#" @click="searchTwo(subject.id, index)"> {{ subject.title }} </a>
+                  <a :title="subject.title" href="javascript:void(0);" @click="searchTwo(subject.id, index)"> {{ subject.title }} </a>
                 </li>
               </ul>
             </dd>
@@ -47,15 +47,19 @@
           </section>
           <section class="fl">
             <ol class="js-tap clearfix">
-              <li>
-                <a title="关注度" href="#">关注度</a>
+              <li :class="{'current bg-orange':buyCountSort!=''}">
+                <a title="销量" href="javascript:void(0);" @click="searchBuyCount()">销量
+                  <span :class="{hide:buyCountSort==''}">↓</span>
+                </a>
               </li>
-              <li>
-                <a title="最新" href="#">最新</a>
+              <li :class="{'current bg-orange':gmtCreateSort!=''}">
+                <a title="最新" href="javascript:void(0);" @click="searchGmtCreate()">最新
+                  <span :class="{hide:gmtCreateSort==''}">↓</span>
+                </a>
               </li>
-              <li class="current bg-orange">
-                <a title="价格" href="#">价格&nbsp;
-                  <span>↓</span>
+              <li :class="{'current bg-orange':priceSort!=''}">
+                <a title="价格" href="javascript:void(0);" @click="searchPrice()">价格&nbsp;
+                  <span :class="{hide:priceSort==''}">↓</span>
                 </a>
               </li>
             </ol>
@@ -211,7 +215,7 @@ export default {
       this.subSubjectList = [];
       // 点击时需要做一次查询
       this.searchObj.subjectParentId = subjectParentId
-      this.gotoPage(1)
+      this.gotoPage(this.page)
       for (let i = 0; i < this.subjectNestedList.length; i++ ) {
         if (this.subjectNestedList[i].id === subjectParentId) {
           this.subSubjectList = this.subjectNestedList[i].children
@@ -225,11 +229,47 @@ export default {
       this.twoIndex = index
       // 二级查询
       this.searchObj.subjectId = subjectId;
-      // this.gotoPage(1)
+      // this.gotoPage(this.page)
+      // console.log(this.page)
       courseApi.getPageList(1, 8, this.searchObj)
         .then(response => {
           this.data = response.data.data
         })
+    },
+
+    // 购买量查询
+    searchBuyCount() {
+      // 设置对应值，让样式生效
+      this.buyCountSort = "1";
+      this.gmtCreateSort = "";
+      this.priceSort = "";
+      // 把值赋给searchObj
+      this.searchObj.buyCountSort = this.buyCountSort;
+      this.searchObj.gmtCreateSort = this.gmtCreateSort;
+      this.searchObj.priceSort = this.priceSort;
+      // 调用方法查询
+      this.gotoPage(this.page)
+    },
+    // 更新时间查询
+    searchGmtCreate() {
+      debugger
+      this.buyCountSort = "";
+      this.gmtCreateSort = "1";
+      this.priceSort = "";
+      this.searchObj.buyCountSort = this.buyCountSort;
+      this.searchObj.gmtCreateSort = this.gmtCreateSort;
+      this.searchObj.priceSort = this.priceSort;
+      this.gotoPage(this.page)
+    },
+    // 价格查询
+    searchPrice() {
+      this.buyCountSort = "";
+      this.gmtCreateSort = "";
+      this.priceSort = "1";
+      this.searchObj.buyCountSort = this.buyCountSort;
+      this.searchObj.gmtCreateSort = this.gmtCreateSort;
+      this.searchObj.priceSort = this.priceSort;
+      this.gotoPage(this.page)
     }
   }
 };
