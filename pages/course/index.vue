@@ -21,7 +21,6 @@
                 <li v-for="(subject,index) in subjectNestedList" :key="index" :class="{active:oneIndex==index}">
                   <a :title="subject.title" href="#" @click="searchOne(subject.id, index)"> {{ subject.title }} </a>
                 </li>
-
               </ul>
             </dd>
           </dl>
@@ -31,7 +30,7 @@
             </dt>
             <dd class="c-s-dl-li">
               <ul class="clearfix">
-                <li v-for="(subject,index) in subSubjectList" :key="index">
+                <li v-for="(subject,index) in subSubjectList" :key="index" :class="{active:twoIndex==index}">
                   <a :title="subject.title" href="#" @click="searchTwo(subject.id, index)"> {{ subject.title }} </a>
                 </li>
               </ul>
@@ -220,9 +219,17 @@ export default {
       }
     },
 
-    // 一级分类
-    searchTwo(id, index) {
-
+    // 二级分类
+    searchTwo(subjectId, index) {
+      // 样式生效
+      this.twoIndex = index
+      // 二级查询
+      this.searchObj.subjectId = subjectId;
+      // this.gotoPage(1)
+      courseApi.getPageList(1, 8, this.searchObj)
+        .then(response => {
+          this.data = response.data.data
+        })
     }
   }
 };
