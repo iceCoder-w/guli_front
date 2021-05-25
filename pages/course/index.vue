@@ -18,8 +18,8 @@
                 <li>
                   <a title="全部" href="#">全部</a>
                 </li>
-                <li v-for="(subject,index) in subjectNestedList" :key="index">
-                  <a :title="subject.title" href="#"> {{ subject.title }} </a>
+                <li v-for="(subject,index) in subjectNestedList" :key="index" :class="{active:oneIndex==index}">
+                  <a :title="subject.title" href="#" @click="searchOne(subject.id, index)"> {{ subject.title }} </a>
                 </li>
 
               </ul>
@@ -32,7 +32,7 @@
             <dd class="c-s-dl-li">
               <ul class="clearfix">
                 <li v-for="(subject,index) in subSubjectList" :key="index">
-                  <a :title="subject.title" href="#"> {{ subject.title }} </a>
+                  <a :title="subject.title" href="#" @click="searchTwo(subject.id, index)"> {{ subject.title }} </a>
                 </li>
               </ul>
             </dd>
@@ -200,7 +200,41 @@ export default {
             this.data = response.data.data
           })
       }
+    },
+
+    // 一级分类，点击显示对应的二级分类，查询数据
+    searchOne(subjectParentId, index) {
+      // 被选中的样式生效
+      this.oneIndex = index
+      this.twoIndex = -1
+      // 清空
+      this.searchObj.subjectId = "";
+      this.subSubjectList = [];
+      // 点击时需要做一次查询
+      this.searchObj.subjectParentId = subjectParentId
+      this.gotoPage(1)
+      for (let i = 0; i < this.subjectNestedList.length; i++ ) {
+        if (this.subjectNestedList[i].id === subjectParentId) {
+          this.subSubjectList = this.subjectNestedList[i].children
+        }
+      }
+    },
+
+    // 一级分类
+    searchTwo(id, index) {
+
     }
   }
 };
 </script>
+<style scoped>
+.active {
+  background: #bdbdbd;
+}
+.hide {
+  display: none;
+}
+.show {
+  display: block;
+}
+</style>
