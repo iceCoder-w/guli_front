@@ -14,5 +14,12 @@ export default {
       url: `/eduservice/subject/getAllSubject`,
       method: 'get'
     })
+  },
+  // 获得单个课程的详细信息
+  getCourseInfo(courseId) {
+    return request({
+      url: `/eduservice/coursefront/getFrontCourseInfo/${courseId}`,
+      method: 'get'
+    })
   }
 }
